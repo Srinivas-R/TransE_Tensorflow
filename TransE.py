@@ -7,7 +7,7 @@ batch_size = 100000
 n = 100
 L1_flag = 1
 margin = 1
-nepoch = 1000
+nepoch = 3000
 
 def next_batch(data):
 	#data is the list of all triples
@@ -63,7 +63,7 @@ merged = tf.summary.merge_all()
 saver = tf.train.Saver()
 
 optimizer = tf.train.GradientDescentOptimizer(learning_rate=0.001).minimize(loss,global_step=global_step)
-normalizer = tf.nn.l2_normalize(ent_emb, axis=1)
+normalizer = tf.nn.l2_normalize(ent_emb, dim=1)
 #completed constructing tf graph
 
 data = np.array(read_data('./data/train.txt'))
