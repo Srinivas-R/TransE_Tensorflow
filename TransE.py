@@ -3,7 +3,7 @@ import numpy as np
 
 num_ents = 14951
 num_rels = 1345
-batch_size = 80000
+batch_size = 100000
 n = 100
 L1_flag = 1
 margin = 1
