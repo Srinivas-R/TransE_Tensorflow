@@ -68,9 +68,6 @@ normalizer = tf.nn.l2_normalize(ent_emb, axis=1)
 
 data = np.array(read_data('./data/train.txt'))
 nbatches = len(data) // batch_size
-print('Batch size : {}'.format(batch_size))
-print('data : {}'.format(len(data)))
-print('nbatches: {}'.format(nbatches))
 
 with tf.Session() as sess:
 	sess.run(tf.global_variables_initializer())
@@ -90,4 +87,4 @@ with tf.Session() as sess:
 			writer.add_summary(summary, tf.train.global_step(sess, global_step))
 			tot_loss += l
 		print('Epoch {}\tLoss {}'.format(_,tot_loss))
-	saver.save(sess, 'model.vec')
+	saver.save(sess, 'Output/model.vec')
