@@ -7,7 +7,7 @@ batch_size = 100000
 n = 100
 L1_flag = 1
 margin = 1
-nepoch = 3000
+nepoch = 1000
 
 def next_batch(data):
 	#data is the list of all triples
