@@ -57,7 +57,7 @@ else:
 	dist_pos = tf.norm(tf.subtract(pos_tail_e, tf.add(pos_head_e, rel_e)) ,axis=1, ord=2)
 	dist_neg = tf.norm(tf.subtract(neg_tail_e, tf.add(neg_head_e, rel_e)) ,axis=1, ord=2)
 
-loss = tf.reduce_mean(tf.maximum(0.0, dist_pos + margin - dist_neg))
+loss = tf.reduce_sum(tf.maximum(0.0, dist_pos + margin - dist_neg))
 tf.summary.scalar('Loss',loss)
 merged = tf.summary.merge_all()
 saver = tf.train.Saver()
@@ -86,5 +86,6 @@ with tf.Session() as sess:
 			l,summary, ___ = sess.run([loss,merged,optimizer],feed_dict)
 			writer.add_summary(summary, tf.train.global_step(sess, global_step))
 			tot_loss += l
+		sess.run(normalizer)
 		print('Epoch {}\tLoss {}'.format(_,tot_loss))
 	saver.save(sess, 'Output/model.vec')
