@@ -88,4 +88,4 @@ with tf.Session() as sess:
 			tot_loss += l
 		sess.run(normalizer)
 		print('Epoch {}\tLoss {}'.format(_,tot_loss))
-	saver.save(sess, 'Output/model.vec')
+	saver.save(sess, 'logs/model.vec')

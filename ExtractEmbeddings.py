@@ -1,9 +1,9 @@
 import tensorflow as tf
 import numpy as np
 
-saver = tf.train.import_meta_graph('Output/model.vec.meta')
+saver = tf.train.import_meta_graph('logs/model.vec.meta')
 sess = tf.Session()
-saver.restore(sess, 'Output/model.vec')
+saver.restore(sess, 'logs/model.vec')
 ents = sess.run('ent_emb:0')
 rels = sess.run('rel_emb:0')
 
