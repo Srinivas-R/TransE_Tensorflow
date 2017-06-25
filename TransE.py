@@ -7,7 +7,7 @@ batch_size = 100000
 n = 100
 L1_flag = 1
 margin = 1
-nepoch = 1000
+nepoch = 3000
 
 def next_batch(data):
 	#data is the list of all triples
@@ -64,6 +64,7 @@ saver = tf.train.Saver()
 
 optimizer = tf.train.GradientDescentOptimizer(learning_rate=0.001).minimize(loss,global_step=global_step)
 normalizer = tf.assign(ent_emb, tf.nn.l2_normalize(ent_emb, dim=1))
+rel_normalizer = tf.assign(rel_emb, tf.nn.l2_normalize(rel_emb, dim=1))
 #completed constructing tf graph
 
 data = np.array(read_data('./data/train.txt'))
@@ -87,5 +88,6 @@ with tf.Session() as sess:
 			writer.add_summary(summary, tf.train.global_step(sess, global_step))
 			tot_loss += l
 		sess.run(normalizer)
+		sess.run(rel_normalizer)
 		print('Epoch {}\tLoss {}'.format(_,tot_loss))
 	saver.save(sess, 'logs/model.vec')
