@@ -3,7 +3,7 @@ import numpy as np
 
 num_ents = 14951
 num_rels = 1345
-batch_size = 100000
+batch_size = 50000
 n = 100
 L1_flag = 1
 margin = 1
@@ -62,7 +62,7 @@ tf.summary.scalar('Loss',loss)
 merged = tf.summary.merge_all()
 saver = tf.train.Saver()
 
-optimizer = tf.train.GradientDescentOptimizer(learning_rate=0.001).minimize(loss,global_step=global_step)
+optimizer = tf.train.AdamOptimizer(learning_rate=0.001).minimize(loss,global_step=global_step)
 normalizer = tf.assign(ent_emb, tf.nn.l2_normalize(ent_emb, dim=1))
 rel_normalizer = tf.assign(rel_emb, tf.nn.l2_normalize(rel_emb, dim=1))
 #completed constructing tf graph
@@ -73,6 +73,7 @@ nbatches = len(data) // batch_size
 with tf.Session() as sess:
 	sess.run(tf.global_variables_initializer())
 	sess.run(normalizer)
+	sess.run(rel_normalizer)
 	writer = tf.summary.FileWriter('logs', sess.graph)
 	for _ in range(nepoch):
 		tot_loss = 0.0
@@ -87,7 +88,5 @@ with tf.Session() as sess:
 			l,summary, ___ = sess.run([loss,merged,optimizer],feed_dict)
 			writer.add_summary(summary, tf.train.global_step(sess, global_step))
 			tot_loss += l
-		sess.run(normalizer)
-		sess.run(rel_normalizer)
 		print('Epoch {}\tLoss {}'.format(_,tot_loss))
 	saver.save(sess, 'logs/model.vec')
