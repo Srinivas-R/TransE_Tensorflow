@@ -36,6 +36,11 @@ def read_data(filename):
 
 ent_emb = tf.Variable(tf.random_uniform(shape=[num_ents, n], minval=-1.0, maxval=1.0, dtype=tf.float32),name='ent_emb')
 rel_emb = tf.Variable(tf.random_uniform(shape=[num_rels, n], minval=-1.0, maxval=1.0, dtype=tf.float32),name='rel_emb')
+
+ent_class = tf.Variable(tf.random_uniform(shape=[num_ents,n], minval=-1.0, maxval=1.0, dtype=tf.float32),name='ent_class')
+rel_head_class = tf.Variable(tf.random_uniform(shape=[num_rels,n], minval=-1.0, maxval=1.0, dtype=tf.float32),name='rel_head_class')
+rel_tail_class= tf.Variable(tf.random_uniform(shape=[num_rels,n], minval=-1.0, maxval=1.0, dtype=tf.float32),name='rel_tail_class')
+
 global_step = tf.Variable(0, name='global_step', trainable=False)
 
 pos_head = tf.placeholder(tf.int32, [batch_size])
@@ -50,14 +55,23 @@ rel_e = tf.nn.embedding_lookup(rel_emb, rel)
 neg_head_e = tf.nn.embedding_lookup(ent_emb, neg_head)
 neg_tail_e = tf.nn.embedding_lookup(ent_emb, neg_tail)
 
+head_class_e = tf.nn.embedding_lookup(ent_class, pos_head)
+tail_class_e = tf.nn.embedding_lookup(ent_class, pos_tail)
+r_h_class_e = tf.nn.embedding_lookup(rel_head_class, rel) 
+r_t_class_e = tf.nn.embedding_lookup(rel_tail_class, rel)
+
 if L1_flag == 1:
 	dist_pos = tf.norm(tf.subtract(pos_tail_e, tf.add(pos_head_e, rel_e)) ,axis=1, ord=1)
 	dist_neg = tf.norm(tf.subtract(neg_tail_e, tf.add(neg_head_e, rel_e)) ,axis=1, ord=1)
+	dist_class_head = tf.norm(tf.subtract(head_class_e, r_h_class_e), axis=1, ord=1)
+	dist_class_tail = tf.norm(tf.subtract(tail_class_e, r_t_class_e), axis=1, ord=1)
 else:
 	dist_pos = tf.norm(tf.subtract(pos_tail_e, tf.add(pos_head_e, rel_e)) ,axis=1, ord=2)
 	dist_neg = tf.norm(tf.subtract(neg_tail_e, tf.add(neg_head_e, rel_e)) ,axis=1, ord=2)
+	dist_class_head = tf.norm(tf.subtract(head_class_e, r_h_class_e), axis=1, ord=2)
+	dist_class_tail = tf.norm(tf.subtract(tail_class_e, r_t_class_e), axis=1, ord=2)
 
-loss = tf.reduce_sum(tf.maximum(0.0, dist_pos + margin - dist_neg))
+loss = tf.reduce_sum(tf.maximum(0.0, dist_pos + margin - dist_neg) + dist_class_head + dist_class_tail)
 tf.summary.scalar('Loss',loss)
 merged = tf.summary.merge_all()
 saver = tf.train.Saver()
